@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Cidade implements Serializable {
@@ -21,7 +22,7 @@ public class Cidade implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "estado_id")
 	private Estado estado;
-
+	
 	public Cidade() {
 		// TODO Auto-generated constructor stub
 	}
