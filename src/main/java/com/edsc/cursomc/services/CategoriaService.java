@@ -36,7 +36,7 @@ public class CategoriaService {
 		this.repo.deleteById(id);
 	}
 
-	public List<Categoria> list() {
+	public List<Categoria> findAll() {
 		List<Categoria> categorias = this.repo.findAll();
 		return categorias;
 	}

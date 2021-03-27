@@ -2,6 +2,7 @@ package com.edsc.cursomc.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.edsc.cursomc.domain.Categoria;
+import com.edsc.cursomc.dto.CategoriaDTO;
 import com.edsc.cursomc.services.CategoriaService;
 import com.edsc.cursomc.services.exceptions.DataIntegrityException;
 
@@ -24,11 +26,7 @@ public class CategoriaResource {
 	@Autowired
 	private CategoriaService service;
 
-	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Categoria>> list() {
-		List<Categoria> categorias = service.list();
-		return ResponseEntity.ok().body(categorias);
-	}
+	
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Categoria> find(@PathVariable Integer id) {
@@ -58,6 +56,13 @@ public class CategoriaResource {
 			throw new DataIntegrityException("Não é possível excluir uma categoria com produtos associados.");
 		}
 		return ResponseEntity.noContent().build();
+	}
+	
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<CategoriaDTO>> findAll() {
+		List<Categoria> list = service.findAll();
+		List<CategoriaDTO> listDTO = list.stream().map(categ -> new CategoriaDTO(categ)).collect(Collectors.toList());
+		return ResponseEntity.ok().body(listDTO);
 	}
 
 }
