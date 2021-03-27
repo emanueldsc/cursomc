@@ -1,8 +1,10 @@
 package com.edsc.cursomc.resources;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.edsc.cursomc.domain.Categoria;
 import com.edsc.cursomc.services.CategoriaService;
+import com.edsc.cursomc.services.exceptions.DataIntegrityException;
 
 @RestController
 @RequestMapping(value = "/categorias")
@@ -20,6 +23,12 @@ public class CategoriaResource {
 
 	@Autowired
 	private CategoriaService service;
+
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<Categoria>> list() {
+		List<Categoria> categorias = service.list();
+		return ResponseEntity.ok().body(categorias);
+	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Categoria> find(@PathVariable Integer id) {
@@ -33,11 +42,21 @@ public class CategoriaResource {
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
-	
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Void> update(@RequestBody Categoria obj, @PathVariable Integer id){
+	public ResponseEntity<Void> update(@RequestBody Categoria obj, @PathVariable Integer id) {
 		obj.setId(id);
 		obj = service.update(obj);
+		return ResponseEntity.noContent().build();
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> delete(@PathVariable Integer id) {
+		try {
+			service.delete(id);
+		} catch(DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possível excluir uma categoria com produtos associados.");
+		}
 		return ResponseEntity.noContent().build();
 	}
 
