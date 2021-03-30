@@ -53,6 +53,7 @@ public class CategoriaResource {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
+		find(id);
 		try {
 			service.delete(id);
 		} catch (DataIntegrityViolationException e) {
