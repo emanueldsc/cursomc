@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.edsc.cursomc.domain.Cliente;
 import com.edsc.cursomc.dto.ClienteDTO;
 import com.edsc.cursomc.services.ClienteService;
-import com.edsc.cursomc.services.exceptions.DataIntegrityException;
 
 @RestController
 @RequestMapping(value = "/clientes")

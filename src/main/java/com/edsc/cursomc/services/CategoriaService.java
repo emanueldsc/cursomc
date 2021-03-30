@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.edsc.cursomc.domain.Categoria;
+import com.edsc.cursomc.domain.Cliente;
 import com.edsc.cursomc.dto.CategoriaDTO;
 import com.edsc.cursomc.repositories.CategoriaRepository;
 import com.edsc.cursomc.services.exceptions.ObjectNotFoundException;
@@ -32,8 +33,9 @@ public class CategoriaService {
 	}
 
 	public Categoria update(Categoria obj) {
-		find(obj.getId());
-		return repo.save(obj);
+		Categoria newObj = find(obj.getId());
+		updateData(newObj, obj);
+		return repo.save(newObj);
 	}
 
 	public void delete(Integer id) {
@@ -52,5 +54,9 @@ public class CategoriaService {
 
 	public Categoria fromDto(CategoriaDTO dto) {
 		return new Categoria(dto.getId(), dto.getNome());
+	}
+	
+	private void updateData(Categoria newObj, Categoria obj) {
+		newObj.setNome(obj.getNome());
 	}
 }
