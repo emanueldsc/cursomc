@@ -2,26 +2,46 @@ package com.edsc.cursomc.dto;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotEmpty;
+
+import org.hibernate.validator.constraints.Length;
+
 public class ClienteNewDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Cliente
+	@NotEmpty
+	@Length(min = 5, max = 120, message = "O tamanho deve ser entre 5 e 120 caracteres.")
 	private String nome;
+
+	@NotEmpty(message = "O preenchimento é pbrigatório.")
 	private String email;
+
+	@NotEmpty(message = "O preenchimento é pbrigatório.")
 	private String cpfOuCnpj;
 	private Integer tipo;
-	
+
 	// Endereço
+	@NotEmpty(message = "O preenchimento é pbrigatório.")
 	private String logradouro;
+
+	@NotEmpty(message = "O preenchimento é pbrigatório.")
 	private String numero;
+	
 	private String complemento;
+
 	private String bairro;
+
+	@NotEmpty(message = "O preenchimento é pbrigatório.")
 	private String cep;
-	
+
+	@NotEmpty(message = "O preenchimento é pbrigatório.")
 	private String telefone1;
+
 	private String telefone2;
+
 	private String telefone3;
-	
+
 	private Integer cidadeId;
 
 	public String getNome() {
@@ -126,7 +146,6 @@ public class ClienteNewDTO implements Serializable {
 
 	public void setCidadeId(Integer cidadeId) {
 		this.cidadeId = cidadeId;
-	} 
-	
-	
+	}
+
 }
