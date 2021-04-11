@@ -2,12 +2,15 @@ package com.edsc.cursomc.dto;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.validator.constraints.Length;
 
 import com.edsc.cursomc.domain.Cliente;
+import com.edsc.cursomc.services.validation.ClienteUpdate;
 
+@ClienteUpdate
 public class ClienteDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -18,11 +21,10 @@ public class ClienteDTO implements Serializable {
 	private String nome;
 
 	@NotEmpty(message = "O preenchimento é obrigatório.")
-	@Length(min = 5, max = 120, message = "O tamanho deve ter entre 5 e 120 caracteres.")
+	@Email(message = "Email inválido")
 	private String email;
 
 	public ClienteDTO() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public ClienteDTO(Cliente c) {
