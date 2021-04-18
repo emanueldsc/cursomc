@@ -3,14 +3,13 @@ package com.edsc.cursomc.services;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.edsc.cursomc.domain.Cidade;
 import com.edsc.cursomc.domain.Cliente;
@@ -18,7 +17,6 @@ import com.edsc.cursomc.domain.Endereco;
 import com.edsc.cursomc.domain.enums.TipoCliente;
 import com.edsc.cursomc.dto.ClienteDTO;
 import com.edsc.cursomc.dto.ClienteNewDTO;
-import com.edsc.cursomc.repositories.CidadeRepository;
 import com.edsc.cursomc.repositories.ClienteRepository;
 import com.edsc.cursomc.repositories.EnderecoRepository;
 import com.edsc.cursomc.services.exceptions.DataIntegrityException;
@@ -31,22 +29,20 @@ public class ClienteService {
 	private ClienteRepository repo;
 	
 	@Autowired
-	private CidadeRepository cidadeRepository;
+	private EnderecoRepository enderecoRepository; 
 	
-	@Autowired
-	private EnderecoRepository enderecoRepository;
-	
+	public Cliente find(Integer id) {
+		Optional<Cliente> obj = repo.findById(id);
+		return obj.orElseThrow(() -> new ObjectNotFoundException(
+				"Objeto não encontrado! Id:" + id + ", Tipo:" + Cliente.class.getName()));
+	}
+
+	@Transactional
 	public Cliente insert(Cliente obj) {
 		obj.setId(null);
 		obj = repo.save(obj);
 		enderecoRepository.saveAll(obj.getEnderecos());
 		return obj;
-	}
-
-	public Cliente find(Integer id) {
-		Optional<Cliente> obj = repo.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException(
-				"Objeto não encontrado! Id:" + id + ", Tipo:" + Cliente.class.getName()));
 	}
 
 	public Cliente update(Cliente obj) {
@@ -73,11 +69,15 @@ public class ClienteService {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		return repo.findAll(pageRequest);
 	}
-
+	
+	public Cliente fromDto(ClienteDTO dto) {
+		return new Cliente(dto.getId(), dto.getNome(), dto.getEmail(), null, null);
+	}
+	
 	@Transactional
 	public Cliente fromDto(ClienteNewDTO dto) {
 		Cliente cli = new Cliente(null, dto.getNome(), dto.getEmail(), dto.getCpfOuCnpj(), TipoCliente.toEnum(dto.getTipo()));
-		Cidade cid = cidadeRepository.findById(dto.getCidadeId()).get();
+		Cidade cid = new Cidade(dto.getCidadeId(), null, null);
 		Endereco endereco = new Endereco(null, dto.getLogradouro(), dto.getNumero(), dto.getComplemento(), dto.getBairro(), dto.getCep(), cli, cid);
 		
 		cli.getEnderecos().add(endereco);
@@ -91,10 +91,7 @@ public class ClienteService {
 		
 		return cli;
 	}
-	
-	public Cliente fromDto(ClienteDTO dto) {
-		return new Cliente(dto.getId(), dto.getNome(), dto.getEmail(), null, null);
-	}
+
 
 	private void updateData(Cliente newObj, Cliente obj) {
 		newObj.setNome(obj.getNome());

@@ -4,15 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.edsc.cursomc.domain.Categoria;
-import com.edsc.cursomc.domain.Cliente;
 import com.edsc.cursomc.dto.CategoriaDTO;
 import com.edsc.cursomc.repositories.CategoriaRepository;
+import com.edsc.cursomc.services.exceptions.DataIntegrityException;
 import com.edsc.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -39,12 +40,16 @@ public class CategoriaService {
 	}
 
 	public void delete(Integer id) {
-		this.repo.deleteById(id);
+		find(id);
+		try {
+			this.repo.deleteById(id);			
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possivel excluri uma categoria que possui produtos.");
+		}
 	}
 
 	public List<Categoria> findAll() {
-		List<Categoria> categorias = this.repo.findAll();
-		return categorias;
+		return this.repo.findAll();
 	}
 
 	public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
